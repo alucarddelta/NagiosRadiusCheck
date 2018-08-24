@@ -5,6 +5,7 @@ import configparser
 config = configparser.ConfigParser()
 
 config.read(options.ini)
+Hostn = config.()
 
 def check_ping():
     hostname =
