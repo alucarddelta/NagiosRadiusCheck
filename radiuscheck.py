@@ -25,6 +25,8 @@ def check_ping():
 #Checks the Radius configuration. Critical (2) if fail.
 def check_radius():
     #If Null is confugured on port bypass#
+
+
     return radiusstatus
 
 
@@ -43,6 +45,6 @@ if check_ping(pingstatus) = "NFAIL":
         elif checkradius(radiusstatus) = "NULL":
                 print "Radius server can be reached, but No Auth Configured"
                 sys.exit(1)
-        elif checkradius(radiusstatus) = "":
-                print "Radius server can be reached, but No Auth Configured"
-                sys.exit(1)
+        elif checkradius(radiusstatus) = "RCFAIL":
+                print "Radius server can be reached, No Auth Failed"
+                sys.exit(2)
