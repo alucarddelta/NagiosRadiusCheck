@@ -1,3 +1,1 @@
 py-radius
-os
-configparser
