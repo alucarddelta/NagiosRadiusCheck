@@ -1,6 +1,0 @@
-[settings]
-Host= 127.0.0.01
-Port= 8080
-RADIUS Secret= Secret
-username= User
-password= Password
