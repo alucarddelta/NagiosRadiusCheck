@@ -1,5 +1,10 @@
 import radius
 import os
+import configparser
+
+config = configparser.ConfigParser()
+
+config.read(options.ini)
 
 def check_ping():
     hostname =
