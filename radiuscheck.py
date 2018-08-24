@@ -23,15 +23,17 @@ def check_ping():
 
 #Checks the Radius configuration. Critical (2) if fail.
 def check_radius():
-    #If Null is confugured on port bypass#
-
-    radiusstatus = "NULL"
+    #If Null is confugured on port, bypass if true as Auth not configured#
+    if rport == "NULL":
+        radiusstatus = "NULL"
+    else:
+        radiusstatus = "NULL"
     return radiusstatus
+#    if radius.authenticate(username=ruser, password=rpass, secret=rsecret, host=rip, port=rport)
 
-
-######
-#Main#
-######
+##########
+## MAIN ##
+##########
 
 pingstatus = check_ping()
 authradius = check_radius()
@@ -40,7 +42,6 @@ authradius = check_radius()
 if pingstatus == "NFAIL":
     print "Unable to reach radius server IP."
     sys.exit(2)
-
 if authradius == "RCSUCCESS":
     print "Radius Server can be reached and Auth Successful."
     sys.exit(0)
