@@ -25,7 +25,7 @@ def check_ping():
 def check_radius():
     #If Null is confugured on port bypass#
 
-#   radiusstatus = "NULL"
+    radiusstatus = "NULL"
     return radiusstatus
 
 
