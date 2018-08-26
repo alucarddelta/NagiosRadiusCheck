@@ -1,5 +1,5 @@
 import radius
-from ConfigParser import SafeConfigParser
+from configparser import SafeConfigParser
 import os
 import sys
 
@@ -14,7 +14,7 @@ rpass = config.get('settings','Pass')
 
 #Checks the Radius ping resonse. Critical (2) if fail.
 def check_ping():
-    response = os.system("ping -c 1 -t 2000 " + rip + " > /dev/null 2>&1")
+    response = os.system("ping -c 1 -t 200 " + rip  + " > /dev/null 2>&1")
     if response == 0:
         pingstatus = "NOK"
     else:
