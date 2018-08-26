@@ -1,51 +1,38 @@
-import radius
-from configparser import SafeConfigParser
+#!/usr/bin/python
+
 import os
 import sys
-
-#Loads configuration
-config = SafeConfigParser()
-config.read('options.ini')
-rip = config.get('settings','Host')
-rport = config.get('settings','Port')
-rsecret = config.get('settings','Secret')
-ruser= config.get('settings','User')
-rpass = config.get('settings','Pass')
-
-#Checks the Radius ping resonse. Critical (2) if fail.
-def check_ping():
-    response = os.system("ping -c 1 -t 200 " + rip  + " > /dev/null 2>&1")
-    if response == 0:
-        pingstatus = "NOK"
-    else:
-        pingstatus = "NFAIL"
-    return pingstatus
-
-#Checks the Radius configuration. Critical (2) if fail.
-def check_radius():
-    #If Null is confugured on port bypass#
-
-    radiusstatus = "NULL"
-    return radiusstatus
+import shlex
+import subprocess
 
 
-######
-#Main#
-######
+filen = "/usr/lib/nagios/plugins/options.ini"
 
-pingstatus = check_ping()
-authradius = check_radius()
+file = open(filen,'r')
+rip = file.read()
+file.close()
 
-#If clear, OK (0). If Server details are left as Null, Warning (1).
-if pingstatus == "NFAIL":
-    print "Unable to reach radius server IP."
+command = shlex.split("ping -c 1 -t 150 " + rip)
+process = subprocess.Popen(command, stdout=subprocess.PIPE)
+output, err = process.communicate()
+
+if process.poll() == 0:
+        pingstatus = "PINGOK"
+else:
+        pingstatus = "PINGFAIL"
+
+pingresult = output
+authradius = "NULL"
+
+if pingstatus == "PINGFAIL":
+    print "Unable to reach radius server IP.\n | " + pingresult
     sys.exit(2)
 
 if authradius == "RCSUCCESS":
     print "Radius Server can be reached and Auth Successful."
     sys.exit(0)
 elif authradius == "NULL":
-    print "Radius server can be reached, but No Auth configured to test."
+    print "Radius server can be reached, but No Auth configured to test.\n | " + pingresult
     sys.exit(1)
 elif authradius == "RCFAIL":
     print "Radius server can be reached, No Auth Failed."
