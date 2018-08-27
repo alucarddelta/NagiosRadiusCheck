@@ -1,53 +1,33 @@
-import radius
-from ConfigParser import SafeConfigParser
+#!/usr/bin/python
+
 import os
 import sys
+import shlex
+import subprocess
 
-#Loads configuration
-config = SafeConfigParser()
-config.read('options.ini')
-rip = config.get('settings','Host')
-rport = config.get('settings','Port')
-rsecret = config.get('settings','Secret')
-ruser= config.get('settings','User')
-rpass = config.get('settings','Pass')
 
-#Checks the Radius ping resonse. Critical (2) if fail.
-def check_ping():
-    response = os.system("ping -c 1 -t 2000 " + rip + " > /dev/null 2>&1")
-    if response == 0:
-        pingstatus = "NOK"
-    else:
-        pingstatus = "NFAIL"
-    return pingstatus
+filen = "/usr/lib/nagios/plugins/options.ini"
 
-#Checks the Radius configuration. Critical (2) if fail.
-def check_radius():
-    #If Null is confugured on port, bypass if true as Auth not configured#
-    if rport == "NULL":
-        radiusstatus = "NULL"
-    else:
-        radiusstatus = "NULL"
-    return radiusstatus
-#    if radius.authenticate(username=ruser, password=rpass, secret=rsecret, host=rip, port=rport)
+file = open(filen,'r')
+rip = file.read()
+file.close()
 
-##########
-## MAIN ##
-##########
+command = shlex.split("ping -c 1 " + rip)
+process = subprocess.Popen(command, stdout=subprocess.PIPE)
+output, err = process.communicate()
 
-pingstatus = check_ping()
-authradius = check_radius()
+if process.poll() == 0:
+        pingstatus = "PINGOK"
+else:
+        pingstatus = "PINGFAIL"
 
-#If clear, OK (0). If Server details are left as Null, Warning (1).
-if pingstatus == "NFAIL":
-    print "Unable to reach radius server IP."
+pingresult = output
+authradius = "NULL"
+
+if pingstatus == "PINGFAIL":
+    print "CRITICAL - Unable to reach radius server. " + rip + "\n | " + pingresult
     sys.exit(2)
-if authradius == "RCSUCCESS":
-    print "Radius Server can be reached and Auth Successful."
+
+if authradius == "NULL":
+    print "OK - Radius server can be reached. " + rip + "\n | " + pingresult
     sys.exit(0)
-elif authradius == "NULL":
-    print "Radius server can be reached, but No Auth configured to test."
-    sys.exit(1)
-elif authradius == "RCFAIL":
-    print "Radius server can be reached, No Auth Failed."
-    sys.exit(2)
